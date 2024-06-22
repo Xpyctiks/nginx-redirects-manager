@@ -32,6 +32,7 @@ $dbName="nginx_manager";
 $dbUser="nginx_manager";
 $dbPassword="";';
   file_put_contents($confFile,$config);
+  echo("New config file was generated. Please, fill in the variables, create MySQL DB using schema.sql and refresh this page!");
   die();
 }
 
@@ -105,7 +106,6 @@ if (isset($_POST['delete']) && (count($_POST)==1)) {
   }
   //die();
 }
-  
 
 if (isset($_POST['logout'])) {
   session_unset();
@@ -178,7 +178,21 @@ if (!isset($_COOKIE['PHPSESSID'])) {
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     <?php
-    }
+    }    
+    $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName", "$dbUser", "$dbPassword");
+    $pdo->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
+    $result=$pdo->query("SELECT COUNT(*) FROM users;");
+    unset($pdo);
+    foreach ($result as $row) {
+      if ($row['COUNT(*)'] == 0){
+        ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 15px;">
+          Three is no users set in database! You need to add at least one.
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php
+      }
+    } 
     ?>
   </div>
   <?php
@@ -241,8 +255,8 @@ if (isset($_POST['addnewSubmit']) && !empty($_POST['RedirectFromField']) && !emp
   }
   //preparing full text
   if (isset($_COOKIE['path']) && !empty($_COOKIE['path'])) {
-    $line1=str_replace("%1",$_POST['RedirectFromField'],preg_replace('~(*BSR_ANYCRLF)\R~', "\n",$template[0]));
-    $line2=rtrim(str_replace("%2","https://".$_COOKIE['domain'].$_POST['RedirectToField'],preg_replace('~(*BSR_ANYCRLF)\R~', "\n",$template[1])));
+    $line1=str_replace("%1",trim($_POST['RedirectFromField']),preg_replace('~(*BSR_ANYCRLF)\R~', "\n",$template[0]));
+    $line2=rtrim(str_replace("%2","https://".$_COOKIE['domain'].trim($_POST['RedirectToField']),preg_replace('~(*BSR_ANYCRLF)\R~', "\n",$template[1])));
     $line3="\n".$template[2]."\n";
     file_put_contents($_COOKIE['path'], $line1.$line2.$line3, FILE_APPEND);
     header('Location: index.php');
@@ -250,7 +264,7 @@ if (isset($_POST['addnewSubmit']) && !empty($_POST['RedirectFromField']) && !emp
 }
 
 //processing addnew function with file upload
-if (isset($_POST['addnewSubmit']) & !empty($_POST['templateField']) && (count($_FILES) > 0)) {
+if (isset($_POST['addnewSubmit']) & !empty($_POST['templateField']) && (isset($_FILES['fileUpload']['name']))) {
   $uploaddir='/tmp/';
   $uploadfile=$uploaddir.basename("nginx-manager.csv");
   move_uploaded_file($_FILES['fileUpload']['tmp_name'], $uploadfile);
@@ -276,6 +290,7 @@ if (isset($_POST['addnewSubmit']) & !empty($_POST['templateField']) && (count($_
         file_put_contents($_COOKIE['path'], $line1.$line2.$line3, FILE_APPEND);
       }
       fclose($handle);
+      unlink($uploadfile);
       header('Location: index.php');
     }
   }
@@ -347,7 +362,6 @@ if (isset($_POST['addnewSubmit']) & !empty($_POST['templateField']) && (count($_
               </form>
           </li>
           <li class="nav-item">
-            <!-- <a class="nav-link active" href="/addnew.php">Add new</a> -->
             <a class="nav-link active" id="totalLines" style="color: #ffc107;"></a>
           </li>
           <li>

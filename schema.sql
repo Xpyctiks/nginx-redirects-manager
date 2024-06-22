@@ -21,6 +21,7 @@ CREATE TABLE `users` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT 'User uniqID',
   `username` tinytext NOT NULL COMMENT 'User name',
   `password` tinytext NOT NULL COMMENT 'User password',
+  `realname` tinytext NOT NULL COMMENT 'Real user name',
   `role` smallint(5) unsigned NOT NULL DEFAULT 1 COMMENT 'User role',
   `created` datetime NOT NULL COMMENT 'When created',
   `session` tinytext DEFAULT NULL COMMENT 'Session token',
