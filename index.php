@@ -71,9 +71,9 @@ if (isset($argv[1]) && ($argv[1] == "adduser") && isset($argv[2])) {
     $pdo->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
     $result=$pdo->query("INSERT INTO users (`username`, `password`, `realname`, `role`) VALUES ('".$argv[2]."', '".crypt($argv[3],$pwdSalt)."', '".$argv[4]."', '".$role."')");
     if ($result) {
-      echo("User added successfully!");
+      echo("User added successfully!\n");
     } else {
-      echo("Seems like some error happened during addition of the user. Check it manually!");
+      echo("Seems like some error happened during addition of the user. Check it manually!\n");
     }
     unset($pdo);
     die();
@@ -158,6 +158,10 @@ if (isset($_POST['logout'])) {
   $result=$pdo->query("UPDATE users SET session='' WHERE id='".$uid."'");
   unset($pdo);
   setcookie("PHPSESSID","",time()-3600);
+  setcookie("realname","",time()-3600);
+  setcookie("domain","",time()-3600);
+  setcookie("path","",time()-3600);
+  setcookie("type","",time()-3600);
   unset($_COOKIE['PHPSESSID']);
   header('Location: index.php');
 }
@@ -171,6 +175,7 @@ if (isset($_POST['login']) && !empty($_POST['username']) && !empty($_POST['passw
     $username=$row['username'];
     $password=$row['password'];
     $uid=$row['id'];
+    $realname=$row['realname'];
   }
   if (password_verify($_POST['password'],$password)) {
     session_start();
@@ -178,6 +183,7 @@ if (isset($_POST['login']) && !empty($_POST['username']) && !empty($_POST['passw
     $pdo->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
     $result=$pdo->query("UPDATE users SET session='".session_id()."' WHERE id='".$uid."'");
     unset($pdo);
+    setcookie("realname",$realname);
     $_COOKIE['PHPSESSID']='';
     header('Location: index.php');
   } else {
@@ -408,9 +414,7 @@ if (isset($_POST['addnewSubmit']) & !empty($_POST['templateField']) && (isset($_
           <span class="spinner-border text-warning" role="status" id="spinnerLoading" style="margin-left: 5px; margin-top: 5px; visibility: hidden;"></span>
         </ul>
         <form class="d-flex" action="/" method="POST">
-          <input class="form-control me-2" type="search" placeholder="Search" id="search-text" name="search-text">
-          <button class="btn btn-outline-success" type="submit" id="search" name="search">Search</button>
-          <button class="btn btn-outline-warning" type="submit" id="logout" name="logout">Logout</button>
+          <button class="btn btn-outline-warning" type="submit" id="logout" name="logout"><?php echo($_COOKIE['realname']);?>&nbsp;Logout</button>
         </form>
       </div>
     </div>
