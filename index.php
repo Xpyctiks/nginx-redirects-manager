@@ -46,6 +46,44 @@ if (isset($argv[1]) && ($argv[1] == "genpwd")) {
   }
   die();
 }
+//Console function to add user
+//Show help function
+if (isset($argv[1]) && (($argv[1] == "adduser") && (!isset($argv[2]))) || ($argv[1] == "help")) {
+  echo("Usage: index.php adduser <username> <user_password> <user_realname> <user_role>\n");
+  echo("<username> - username for login page\n");
+  echo("<password> - user password for login page\n");
+  echo("<useer_realname> - real name of the nw user\n");
+  echo("<user_role> - \"1\" - default User role. \"2\" - Admin role\n");
+  die();
+}
+//add user function
+if (isset($argv[1]) && ($argv[1] == "adduser") && isset($argv[2])) {
+  //checking all necessary parameters are set
+  if (isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
+    //checking if Role parameter set. If not, using default vaule 1.
+    if (isset($argv[5])) {
+      $role=$argv[5];
+    } else {
+      $role="1";
+    }
+    //processing request
+    $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName", "$dbUser", "$dbPassword");
+    $pdo->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
+    $result=$pdo->query("INSERT INTO users (`username`, `password`, `realname`, `role`) VALUES ('".$argv[2]."', '".crypt($argv[3],$pwdSalt)."', '".$argv[4]."', '".$role."')");
+    if ($result) {
+      echo("User added successfully!");
+    } else {
+      echo("Seems like some error happened during addition of the user. Check it manually!");
+    }
+    unset($pdo);
+    die();
+  }
+  else
+  {
+    echo("Error! Some of important parameters is not set. Try \"index.php help\" to get all information about.\n");
+    die();
+  }
+}
 ?>
 
 <!doctype html>
