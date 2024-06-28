@@ -1,0 +1,37 @@
+<div class="card" style="margin-top: 7vh; margin-left: 30vw; width: 80vh; height: 38vw;">
+<div class="card-header">
+  <?php echo("Add new <strong>".$_COOKIE['type']."</strong> redirects for domain <strong>".$_COOKIE['domain']."</strong> :"); ?>
+</div>
+<div class="card-body">
+  <form action="/" method="POST" enctype="multipart/form-data">
+  <h5 class="card-title">Step 1:</h5>
+  <p class="card-text">You can upload a CSV file with your redirects.</p>
+  <span class="badge rounded-pill bg-info text-dark">Example of CSV file:</span>
+  <p>Make redirect from <font color=blue>https://site.com</font><font color=red>/news/latest/</font> to <font color=blue>https://site.com</font><font color=orange>/hottest/latest/</font>:</p>
+  <p><strong>some_file.csv:</strong></p>
+  <p><strong>/news/latest/,/hottest/latest/</strong></p>
+  <p>one redirect per line. The domain is set in header and doesn't need to be set in the CSV file</p>
+  <input type="file" class="form-control form-control-sm" name="fileUpload" id="fileUpload"><br>
+  <p class="card-text">or add single record right here:</p>
+  <div class="input-group mb-3">
+    <span class="input-group-text" id="RedirectFromField">Redirect from:</span>
+    <input type="text" class="form-control" placeholder="/page/subpage/oldpage/" name="RedirectFromField">
+  </div>
+  <div class="input-group mb-3">
+    <span class="input-group-text" id="RedirectToField" >Redirect to:&nbsp;&nbsp;&nbsp;&nbsp;</span>
+    <input type="text" class="form-control" placeholder="/page/newpage/" name="RedirectToField">
+  </div>
+  <p class="card-text">If you selected a file, this file will be submitted.Data from text forms will be ignored.<br>If you didn't selected a file, text froms data will be submitted.</p>
+  <h5 class="card-title">Step 2:</h5>
+  <div class="mb-3">
+  <span class="badge rounded-pill bg-info text-dark">Select a template for the redirect:</span>
+    <select class="form-select form-select-sm" name="templateField">
+    <?php $result=$pdo->query("SELECT * FROM templates WHERE type='".htmlspecialchars($_COOKIE['type'])."' ORDER BY name");
+      foreach ($result as $row) {
+        echo("<option value=\"".$row['name']."\">".$row['name']." (".$row['hint'].")</option>");
+      } ?>
+    </select>
+    </div>
+    <button type="submit" class="btn btn-info" name="addnewSubmit" value="addnewSubmit">Submit</button>
+  </form>
+</div>

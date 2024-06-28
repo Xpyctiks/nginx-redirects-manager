@@ -1,0 +1,34 @@
+<div id="loginContainer" style="width: 400px; height: 400px; margin-left: 40vw; margin-top: 25vh;">
+<p class="display-6" style="text-align: center; margin-left: 1px;">Nginx Redirects Manager</p>
+<span class="badge rounded-pill bg-primary" style="font-size: 14px; margin-bottom: 15px; margin-left: 100px;">Authorization is needed here:</span>
+  <form action="" method="POST">
+    <div class="input-group mb-3">
+      <span class="input-group-text">Username</span>
+      <input type="text" class="form-control" id="username" name="username">
+    </div>
+    <div class="input-group mb-3">
+      <span class="input-group-text">Password&nbsp;</span>
+      <input type="password" class="form-control" id="password" name="password">
+    </div>
+    <button style="margin-left: 170px;" type="submit" id="login" name="login" class="btn btn-primary" onclick="showLoading()">Log In</button>
+  </form>
+  <div class="spinner-border text-primary" role="status" style="margin-left: 190px; margin-top: 15px; visibility: hidden;" id="spinner">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+  <?php if (isset($wrongLoginPwd) && ($wrongLoginPwd== "1")) { ?>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 15px;">
+    Wrong username or password!
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <?php }
+  //check if DB is empty - show an alert about
+  $result=$pdo->query("SELECT COUNT(*) FROM users;");
+  foreach ($result as $row) {
+    if ($row['COUNT(*)'] == 0){ ?>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 15px;">
+        Three is no users set in database! You need to add at least one.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <?php }
+  } ?>
+</div>

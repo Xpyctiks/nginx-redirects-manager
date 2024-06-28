@@ -1,0 +1,30 @@
+<main>
+<div style="margin-top: 7vh;max-width: 95%; margin-left: 50px;">
+  <div>
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Redirect from:</th>
+      <th scope="col">Select:&nbsp;<input class="form-check-input is-invalid" type="checkbox" onclick="checkAll(this)" id="checkbox"></th>
+      <th scope="col">Redirect to:</th>
+      <th scope="col">Type:</th>
+      <th scope="col">Action:</th>
+      <th scope="col">Line#:</th>
+    </tr>
+    </thead>
+    <tbody>
+    <script>
+      document.getElementById("spinnerLoading").style.visibility = "visible";
+    </script>
+    <form action="/" method="POST">
+    <?php if (isset($_COOKIE['path'])) {
+      if(file_exists($_COOKIE['path'])==false) { ?>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 15px;">
+      Config file <?php echo($_COOKIE['path']);?> not found or unable to open it!
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      <script>
+        document.getElementById("spinnerLoading").style.visibility = "hidden";
+      </script>
+    <?php } } ?>
