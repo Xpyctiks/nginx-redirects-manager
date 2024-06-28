@@ -61,7 +61,7 @@
       </ul>
       <form class="d-flex" action="/" method="POST">
       <a class="nav-link active" id="totalLines" style="color: #ffc107;"><?php
-      echo("Current commit: ".substr(file_get_contents("/etc/nginx/.git/COMMIT_EDITMSG"),0,39));
+      echo("Current commit: ".substr(file_get_contents($nginxFolder.$nginxAddConfigsFolder.".git/COMMIT_EDITMSG"),0,39));
       ?></a>
       <button type="submit" class="btn btn-warning" name="rollback" id="rollbackButton" onClick="return confirm('Rollback to the last commit? All changes, if you made something, will be lost!')">Rollback</button>&nbsp;&nbsp;
       <button type="submit" class="btn btn-danger" name="commit" id="commitButton" onClick="return confirm('Commit and apply all changes on the server?')">Commit changes</button>&nbsp;&nbsp;

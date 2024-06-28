@@ -19,7 +19,7 @@ $confFile="./nginx-manager.conf";
 if (file_exists($confFile)) {
   //loading variables from config files
   include $confFile;
-  if (empty($dbHost) || empty($dbName) || empty($dbPassword) || empty($dbPort) || empty($dbUser)) {
+  if (empty($dbHost) || empty($dbName) || empty($dbPassword) || empty($dbPort) || empty($dbUser) || empty($nginxFolder) || empty($nginxAddConfigsFolder)) {
     $message="ERROR: Some important variables are not set in the config file not found. Can not proceed...";
     error_log($message,0);
     echo($message);
@@ -37,7 +37,12 @@ $dbHost="127.0.0.1";
 $dbPort="3306";
 $dbName="nginx_manager";
 $dbUser="nginx_manager";
-$dbPassword="";';
+$dbPassword="";
+//nginx root folder. With trailing slash
+$nginxFolder="/etc/nginx/";
+//Additional configs folder. With trailing slash
+$nginxAddConfigsFolder="additional-configs/";';
+
   file_put_contents($confFile,$config);
   echo("New config file was generated. Please, fill in the variables, create MySQL DB using schema.sql and refresh this page!");
   die();
@@ -343,9 +348,9 @@ if (isset($_POST['addnew'])) {
 
 //processing Rollback operation
 if (isset($_POST['rollback'])) {
-  $hdr=date("Y-m-d H:i:s")." Rollback to commit \"".trim(substr(file_get_contents("/etc/nginx/.git/COMMIT_EDITMSG"),0,39))."\" by ".$_COOKIE['realname'];
+  $hdr=date("Y-m-d H:i:s")." Rollback to commit \"".trim(substr(file_get_contents($nginxFolder.$nginxAddConfigsFolder.".git/COMMIT_EDITMSG"),0,39))."\" by ".$_COOKIE['realname'];
   ob_start();
-  passthru("./rollback.sh");
+  passthru("./rollback.sh \"".$nginxFolder."\" \"".$nginxAddConfigsFolder."\"");
   $res=ob_get_contents();
   ob_end_clean();
   file_put_contents("rollback.log", $hdr." Result: ".$res, FILE_APPEND);
@@ -354,9 +359,9 @@ if (isset($_POST['rollback'])) {
 
 //processing Commit operation
 if (isset($_POST['commit'])) {
-  $hdr=date("Y-m-d H:i:s")." Commiting changes from commit \"".trim(substr(file_get_contents("/etc/nginx/.git/COMMIT_EDITMSG"),0,39))."\" to the new one by ".$_COOKIE['realname'];
+  $hdr=date("Y-m-d H:i:s")." Commiting changes from commit \"".trim(substr(file_get_contents($nginxFolder.$nginxAddConfigsFolder.".git/COMMIT_EDITMSG"),0,39))."\" to the new one by ".$_COOKIE['realname'];
   ob_start();
-  passthru("./commit.sh \"".$_COOKIE['realname']."\"");
+  passthru("./commit.sh \"".$_COOKIE['realname']."\" \"".$nginxFolder."\" \"".$nginxAddConfigsFolder."\"");
   $res=ob_get_contents();
   file_put_contents("commit.log", $hdr." Result: ".$res, FILE_APPEND);
   ob_end_clean();
